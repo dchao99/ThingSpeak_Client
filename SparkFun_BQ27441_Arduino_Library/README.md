@@ -33,7 +33,8 @@ Version History
 ---------------
 
 * [1.0.0](https://github.com/sparkfun/SparkFun_BQ27441_Arduino_Library/releases/tag/V_1.0.0) - Initial release of the BQ27441 Arduino Library.
-* Modified by D. Chao - Added more functions to read/write the data memory.
+* Modified by D. Chao - Added more functions to read/write the data memory, in order
+  to generate the battery golden image.
 
 License Information
 -------------------
