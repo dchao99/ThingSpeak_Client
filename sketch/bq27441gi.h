@@ -5,7 +5,7 @@
 */
 
 
-#define BAT_2
+#define BAT_6
 
 
 // BAT_1 (eBay): 850mAh@3.7V Taper=42 Qmax=16535
@@ -18,15 +18,14 @@ uint16 lipoSavedRaTable[] = {86,86,90,104,83,82,95,112,113,115,141,169,314,815,1
 #endif //BAT_1
 
 
-// BAT_2 (X5C): 650mAh@3.7V Taper=32 Qmax=16429
+// BAT_2 (X5C): 650mAh@3.7V Taper=32 Qmax=16564
 #ifdef BAT_2
 const unsigned int lipoDesignCapacity = 650;   // (mAh)
 const unsigned int lipoDesignEnergy = 650*3.7; // = Capacity * Nominal Voltage
 const unsigned int lipoTaperRate = 32;         // = Capacity / (0.1 * Taper current)
-const unsigned int lipoSavedQmax = 16429;      // Set to -1 if battery data not available
-uint16 lipoSavedRaTable[] = {32,32,28,30,17,13,14,14,13,11,14,16,32,86,137}; 
+const unsigned int lipoSavedQmax = 16564;      // Set to -1 if battery data not available
+uint16 lipoSavedRaTable[] = {32,32,28,30,17,11,15,15,14,11,15,18,34,91,145}; 
 #endif //BAT_2
-
 
 // BAT_3 (Panasonic_B-Grn): 3400mAh@3.6V Taper=113 Qmax=16571
 #ifdef BAT_3
@@ -56,6 +55,16 @@ const unsigned int lipoTaperRate = 95;          // = Capacity / (0.1 * Taper cur
 const unsigned int lipoSavedQmax = 16572;       // Set to -1 if battery data not available
 uint16 lipoSavedRaTable[] = {62,62,62,69,50,46,52,57,55,55,70,86,165,424,677};
 #endif //BAT_5
+
+
+// BAT_6 (Samsung_25R-Grn): 2500mAh@3.6V Taper=100 Qmax=(-1)
+#ifdef BAT_6
+const unsigned int lipoDesignCapacity = 2500;   // (mAh)
+const unsigned int lipoDesignEnergy = 2500*3.6; // = Capacity * Nominal Voltage
+const unsigned int lipoTaperRate = 100;         // = Capacity / (0.1 * Taper current)
+const unsigned int lipoSavedQmax = -1;          // Set to -1 if battery data not available
+uint16 lipoSavedRaTable[] = {102,102,99,107,72,59,62,63,53,47,60,70,140,369,588};
+#endif //BAT_6
 
 
 // Default Qmax = 16384
