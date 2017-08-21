@@ -94,7 +94,7 @@ bool BQ27441::setTerminateVoltage(uint16_t voltage)
 	// Write to STATE subclass (82) of BQ27441 extended memory.
 	// Offset 0x10 (16)
 	// voltage is a 2-byte piece of data - MSB first
-	uint16_t volt = {constrain(voltage, 2500, 3700)};
+	uint16_t volt = constrain(voltage, 2500, 3700);
 	uint8_t voltMSB = volt >> 8;
 	uint8_t voltLSB = volt & 0x00FF;
 	uint8_t stateData[2] = {voltMSB, voltLSB};
