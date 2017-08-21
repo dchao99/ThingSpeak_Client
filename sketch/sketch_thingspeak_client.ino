@@ -30,9 +30,6 @@ Deep-Sleep:
 
 
 #include <ESP8266WiFi.h>
-extern "C" {
-  #include "user_interface.h"
-}
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 #include <SparkFunBQ27441.h>
@@ -78,9 +75,8 @@ Adafruit_BME280 bme;
 BQ27441 lipo;
 
 #ifdef BQ27441_FUEL_GAUGE
-
-#include "bq27441gi.h"    // Fuel gauge golden image
-
+// Battery Golden Image File
+#include "bq27441gi.h"
 //
 //  Additional BQ27441 Data Memory Access functions not available in Sparkfun library,
 //  And we can also control the enter and exit of the configuration mode
@@ -411,10 +407,6 @@ void setup()
       #endif
       break;
   }
-  
-  #ifdef DEBUG_MAX_POWER  // Keep the ESP processor awake for fast discharge
-  wifi_set_sleep_type(MODEM_SLEEP_T);
-  #endif
 }  // end of setup
 
 

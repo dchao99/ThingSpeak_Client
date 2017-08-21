@@ -3,14 +3,14 @@
  Note: Sparkfun BS, R_iset is changed to 825Ω, the new I_term is (0.1 * 890/820) = 110mA.
        If bat < 850mAh, Taper current = I-term + 90mA, otherwise Taper current = 0.1 C (±10%)
 
- BAT_1 (eBay)
- BAT_2 (Panasonic_B-Grn)
- BAT_3 (Samsung_30Q-Pink)
- BAT_4 (Samsung_25R-Grn)
- BAT_5 (PKCell_803035)
+  BAT_1 (eBay)
+  BAT_2 (Panasonic_B-Grn)
+  BAT_3 (Samsung_30Q-Pink)
+  BAT_4 (Samsung_25R-Grn)
+  BAT_5 (PKCell_803035)
 */
 
-
+ 
 #define BAT_2
 
 
