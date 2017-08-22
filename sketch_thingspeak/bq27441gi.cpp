@@ -9,7 +9,7 @@
 #include "bq27441gi.h"
 
 
-#define BAT_1
+#define BAT_4
 
 // BAT_1 (eBay_803035)
 // BAT_2 (Panasonic_B-Grn)
@@ -22,13 +22,13 @@
 // Note: On Sparkfun BS, R_iset is changed to 825Ω, the new I_term is (0.1 * 890/820) = 110mA.
 //       If bat < 850mAh, Taper current = I-term + 90mA, otherwise Taper current = 0.1 C (±10%)
 
-// BAT_1 (eBay_803035): 850mAh@3.7V Taper=42 Qmax=16535
+// BAT_1 (eBay_803035): 850mAh@3.7V Taper=42 Qmax=16469
 #ifdef BAT_1
 const unsigned int design_capacity = 850;   // (mAh)
 const unsigned int design_energy = 850*3.7; // = Capacity * Nominal Voltage
 const unsigned int taper_rate = 42;         // = Capacity / (0.1 * Taper current)
-const unsigned int saved_Qmax = 16535;      // Set to -1 if battery data not available
-uint16 saved_RaTable[] = {86,86,90,104,83,82,95,112,113,115,141,169,314,815,1300};
+const unsigned int saved_Qmax = 16469;      // Set to -1 if battery data not available
+uint16 saved_RaTable[] = {67,67,71,82,68,70,84,104,110,116,143,170,301,762,1212};
 #endif //BAT_1
 
 
