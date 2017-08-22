@@ -1,5 +1,5 @@
 /*
- * BQ27441 Data Memory Library
+ * BQ27441 Golden Image Data Memory Library
  * This library contains the Golden Image for each battery type, and functions for accessing 
  * the Data Memory which stores the default, calibration, configuration parameters.
  * Created: Aug 21, 2017 by David Chao
