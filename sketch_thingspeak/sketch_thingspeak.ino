@@ -1,8 +1,9 @@
 /*
  ESP8266 --> ThingSpeak Channel via ESP8266 Wi-Fi
  
- This sketch sends the value of Analog Input (A0) and the BME280 sensors on the I2C bus to a  
- ThingSpeak channel using the ThingSpeak API (https://www.mathworks.com/help/thingspeak).
+ This sketch sends the value of Analog Input (A0), the BME280 sensors, and BQ27441 Battery 
+ Fuel Gauge data on the I2C bus to a ThingSpeak channel using the ThingSpeak API 
+ (https://www.mathworks.com/help/thingspeak).
 
  ThingSpeak Setup:
  
