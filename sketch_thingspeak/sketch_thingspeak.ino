@@ -47,26 +47,29 @@ Deep-Sleep:
                                          // LM3671 Shield:   Vin = 4.43
 
 // Wi-Fi Settings
-const char* ssid     = "XXXXXXXXXXX";      // your wireless network name (SSID)
-const char* password = "XXXXXXXX";         // your Wi-Fi network password
+const char* ssid     = "San Leandro";      // your wireless network name (SSID)
+const char* password = "nintendo";         // your Wi-Fi network password
 char hostString[16]  = {0};
 const unsigned long wifiConnectTimeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
-const int channelID     = 000000;                // Channel ID for ThingSpeak 
-String writeAPIKey      = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+const int channelID     = 293299;                // Channel ID for ThingSpeak 
+String writeAPIKey      = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* apiEndpoint = "api.thingspeak.com";  // URL
 const int uploadInterval =  30 * 1000;      // External power: posting data every 30 sec
 const uint32 sleepTimer  = 060 * 1000000;   // Normal battery: Deep sleep timer = 60 sec
 const uint32 hiberTimer  = 150 * 1000000;   // Hibernate: Deep sleep timer = 2.5 min
 
 // ESP8266 settings
-// Note: If Sparkfun BatterySitter used, there is a 0.05V drop between V(bat) and V(A0)
 const int rechgVoltage = 4120;   // (mV) Recharging threshold, above -> battery full/charging 
 const int hiberVoltage = 3500;   // (mV) Hibernate voltage (SoC~20%) -> reduce upload frequency
-const int underVoltage = 3100;   // (mV) Under voltage (UVLO) -> shut-down immediately
+const int underVoltage = 3075;   // (mV) Under voltage (UVLO) -> shut-down immediately
 const int floatVoltage = 500;    // (mV) No battery, VBAT is floating
 enum battery { VBAT_FLOAT, VBAT_CRITICAL, VBAT_LOW, VBAT_NORMAL, VBAT_FULL } wemosBattery;
+
+// BQ27441 settings
+// There is a 0.05V drop between V(bat) and V(A0)
+const int lipoTerminateVolt = underVoltage+25;
 
 // BME280 settings
 const float thingAltitude = 30;     // My altitude (meters)
@@ -273,7 +276,7 @@ void setup()
     #ifdef DEBUG_ESP8266
     Serial.print(F("BQ27441: POR detected. "));
     #endif 
-    if ( bq27441_InitParameters(lipo,underVoltage) ) {
+    if ( bq27441_InitParameters(lipo,lipoTerminateVolt) ) {
       #ifdef DEBUG_ESP8266
       Serial.println(F("Fuel Gauge initialized."));
       #endif 
