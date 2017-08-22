@@ -47,7 +47,7 @@ Deep-Sleep:
                                          // LM3671 Shield:   Vin = 4.43
 
 // Wi-Fi Settings
-const char* ssid     = "San Leandro";      // your wireless network name (SSID)
+const char* ssid     = "XXXXXXXXXXX";      // your wireless network name (SSID)
 const char* password = "XXXXXXXX";         // your Wi-Fi network password
 char hostString[16]  = {0};
 const unsigned long wifiConnectTimeout = 10 * 1000;  // 10 seconds
