@@ -48,13 +48,13 @@ Deep-Sleep:
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 char hostString[16]  = {0};
 const unsigned long wifiConnectTimeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channelID     = 293299;                // Channel ID for ThingSpeak 
-String writeAPIKey      = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+String writeAPIKey      = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* apiEndpoint = "api.thingspeak.com";  // URL
 const int uploadInterval =  30 * 1000;      // External power: posting data every 30 sec
 const uint32 sleepTimer  = 060 * 1000000;   // Normal battery: Deep sleep timer = 60 sec
@@ -63,7 +63,7 @@ const uint32 hiberTimer  = 150 * 1000000;   // Hibernate: Deep sleep timer = 2.5
 // ESP8266 settings
 const int rechgVoltage = 4120;   // (mV) Recharging threshold, above -> battery full/charging 
 const int hiberVoltage = 3500;   // (mV) Hibernate voltage (SoC~15%) -> reduce upload frequency
-const int underVoltage = 3050;   // (mV) Under voltage (UVLO) -> shut-down immediately
+const int underVoltage = 3070;   // (mV) Under voltage (UVLO) -> shut-down immediately
 const int floatVoltage = 500;    // (mV) No battery, VBAT is floating
 enum battery { VBAT_FLOAT, VBAT_CRITICAL, VBAT_LOW, VBAT_NORMAL, VBAT_FULL } wemosBattery;
 
