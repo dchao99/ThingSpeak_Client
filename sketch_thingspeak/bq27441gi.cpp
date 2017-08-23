@@ -9,7 +9,7 @@
 #include "bq27441gi.h"
 
 
-#define BAT_4
+#define BAT_3
 
 // BAT_1 (eBay_803035)
 // BAT_2 (Panasonic_B-Grn)
@@ -52,13 +52,13 @@ uint16 saved_RaTable[] = {225,225,213,230,159,135,147,154,136,126,164,197,400,10
 #endif //BAT_3
 
 
-// BAT_4 (Samsung_25R-Grn): 2500mAh@3.6V Taper=108 Qmax=16415
+// BAT_4 (Samsung_25R-Grn): 2500mAh@3.6V Taper=108 Qmax=16420
 #ifdef BAT_4
 const unsigned int design_capacity = 2500;   // (mAh)
 const unsigned int design_energy = 2500*3.6; // = Capacity * Nominal Voltage
 const unsigned int taper_rate = 108;         // = Capacity / (0.1 * Taper current)
-const unsigned int saved_Qmax = 16415;       // Set to -1 if battery data not available
-uint16 saved_RaTable[] = {210,210,202,221,155,133,146,154,134,127,169,202,396,1039,1653};
+const unsigned int saved_Qmax = 16420;       // Set to -1 if battery data not available
+uint16 saved_RaTable[] = {174,174,166,186,136,122,142,155,139,139,193,235,464,1213,1930};
 #endif //BAT_4
 
 
