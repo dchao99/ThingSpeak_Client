@@ -42,13 +42,13 @@ uint16 savedRaTable[] = {28,284,280,306,210,175,189,195,169,155,200,240,481,1262
 #endif //BAT_2
 
 
-// BAT_3 (Samsung_30Q-Pink): 3000mAh@3.6V Taper=110 Qmax=16603
+// BAT_3 (Samsung_30Q-Pink): 3000mAh@3.6V Taper=110 Qmax=16546
 #ifdef BAT_3
 const unsigned int designCapacity = 3000;   // (mAh)
 const unsigned int designEnergy = 3000*3.6; // = Capacity * Nominal Voltage
 const unsigned int taperRate = 110;         // = Capacity / (0.1 * Taper current)
-const unsigned int savedQmax = 16603;       // Set to -1 if battery data not available
-uint16 savedRaTable[] = {225,225,213,230,159,135,147,154,136,126,164,197,400,1047,1669};
+const unsigned int savedQmax = 16546;       // Set to -1 if battery data not available
+uint16 savedRaTable[] = {251,251,233,252,178,157,176,189,172,165,218,267,550,1431,2278};
 #endif //BAT_3
 
 
