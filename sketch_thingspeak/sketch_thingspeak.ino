@@ -48,13 +48,13 @@ Deep-Sleep:
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 char hostString[16]  = {0};
 const unsigned long wifiConnectTimeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channelID     = 293299;                // Channel ID for ThingSpeak 
-String writeAPIKey      = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+String writeAPIKey      = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* apiEndpoint = "api.thingspeak.com";  // URL
 const int uploadInterval =  30 * 1000;      // External power: posting data every 30 sec
 const uint32 sleepTimer  = 060 * 1000000;   // Normal battery: Deep sleep timer = 60 sec
@@ -69,7 +69,7 @@ enum battery { VBAT_FLOAT, VBAT_CRITICAL, VBAT_LOW, VBAT_NORMAL, VBAT_FULL } wem
 
 // BQ27441 settings
 // Note: there is a 0.05V drop between V(bat) and V(A0)
-const int lipoTerminateVolt = 3100;  // (mV) Host system lowest operating voltage 
+const int terminateVolt = 3100;  // (mV) Host system lowest operating voltage 
 
 // BME280 settings
 const float thingAltitude = 30;     // My altitude (meters)
@@ -276,7 +276,7 @@ void setup()
     #ifdef DEBUG_ESP8266
     Serial.print(F("BQ27441: POR detected. "));
     #endif 
-    if ( bq27441_InitParameters(lipo,lipoTerminateVolt) ) {
+    if ( bq27441_InitParameters(lipo,terminateVolt) ) {
       #ifdef DEBUG_ESP8266
       Serial.println(F("Fuel Gauge initialized."));
       #endif 
