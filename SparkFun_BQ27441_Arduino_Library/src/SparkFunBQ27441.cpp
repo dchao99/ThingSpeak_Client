@@ -7,7 +7,7 @@ https://github.com/sparkfun/SparkFun_BQ27441_Arduino_Library
 
 Implementation of all features of the BQ27441 LiPo Fuel Gauge.
 
-Modified by D. Chao:
+Modified by D. Chao: 
 - Moved BQ27441 class declaration code into the main program
 - Modified setCapacity() - Set the Design Energy inside the function at the same time.
 - Added setTaperRate() - To detect primary charge termination condition correctly.
