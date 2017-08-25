@@ -9,13 +9,14 @@
 #include "bq27441gi.h"
 
 
-#define BAT_3
+#define BAT_6
 
 // BAT_1 (eBay_803035)
-// BAT_2 (Panasonic_B-Grn)
-// BAT_3 (Samsung_30Q-Pink)
-// BAT_4 (Samsung_25R-Grn)
-// BAT_5 (PKCell_803860)
+// BAT_2 (PKCell_803860)
+// BAT_3 (Panasonic_B-Grn)
+// BAT_4 (Samsung_30Q-Pink)
+// BAT_5 (Samsung_25R-Grn)
+
 
 
 // BQ27441 Fuel Gauge Golden Image
@@ -32,48 +33,59 @@ uint16 savedRaTable[] = {67,67,71,82,68,70,84,104,110,116,143,170,301,762,1212};
 #endif //BAT_1
 
 
-// BAT_2 (Panasonic_B-Grn): 3400mAh@3.6V Taper=112 Qmax=16460
+// BAT_2 (PKCell_803860): 2000mAh@3.7V Taper=95 Qmax=16572
 #ifdef BAT_2
-const unsigned int designCapacity = 3400;   // (mAh)
-const unsigned int designEnergy = 3400*3.6; // = Capacity * Nominal Voltage
-const unsigned int taperRate = 112;         // = Capacity / (0.1 * Taper current)
-const unsigned int savedQmax = 16460;       // Set to -1 if battery data not available
-uint16 savedRaTable[] = {28,284,280,306,210,175,189,195,169,155,200,240,481,1262,2005}; 
-#endif //BAT_2
-
-
-// BAT_3 (Samsung_30Q-Pink): 3000mAh@3.6V Taper=110 Qmax=16546
-#ifdef BAT_3
-const unsigned int designCapacity = 3000;   // (mAh)
-const unsigned int designEnergy = 3000*3.6; // = Capacity * Nominal Voltage
-const unsigned int taperRate = 110;         // = Capacity / (0.1 * Taper current)
-const unsigned int savedQmax = 16546;       // Set to -1 if battery data not available
-uint16 savedRaTable[] = {251,251,233,252,178,157,176,189,172,165,218,267,550,1431,2278};
-#endif //BAT_3
-
-
-// BAT_4 (Samsung_25R-Grn): 2500mAh@3.6V Taper=108 Qmax=16420
-#ifdef BAT_4
-const unsigned int designCapacity = 2500;   // (mAh)
-const unsigned int designEnergy = 2500*3.6; // = Capacity * Nominal Voltage
-const unsigned int taperRate = 108;         // = Capacity / (0.1 * Taper current)
-const unsigned int savedQmax = 16420;       // Set to -1 if battery data not available
-uint16 savedRaTable[] = {174,174,166,186,136,122,142,155,139,139,193,235,464,1213,1930};
-#endif //BAT_4
-
-
-// BAT_5 (PKCell_803860): 2000mAh@3.7V Taper=95 Qmax=16572
-#ifdef BAT_5
 const unsigned int designCapacity = 2000;   // (mAh)
 const unsigned int designEnergy = 2000*3.7; // = Capacity * Nominal Voltage
 const unsigned int taperRate = 95;          // = Capacity / (0.1 * Taper current)
 const unsigned int savedQmax = 16572;       // Set to -1 if battery data not available
 uint16 savedRaTable[] = {62,62,62,69,50,46,52,57,55,55,70,86,165,424,677};
+#endif //BAT_2
+
+
+// BAT_3 (Panasonic_B-Grn): 3400mAh@3.6V Taper=112 Qmax=16460
+#ifdef BAT_3
+const unsigned int designCapacity = 3400;   // (mAh)
+const unsigned int designEnergy = 3400*3.6; // = Capacity * Nominal Voltage
+const unsigned int taperRate = 112;         // = Capacity / (0.1 * Taper current)
+const unsigned int savedQmax = 16460;       // Set to -1 if battery data not available
+uint16 savedRaTable[] = {28,284,280,306,210,175,189,195,169,155,200,240,481,1262,2005}; 
+#endif //BAT_3
+
+
+// BAT_4 (Samsung_30Q-Pink): 3000mAh@3.6V Taper=110 Qmax=16546
+#ifdef BAT_4
+const unsigned int designCapacity = 3000;   // (mAh)
+const unsigned int designEnergy = 3000*3.6; // = Capacity * Nominal Voltage
+const unsigned int taperRate = 110;         // = Capacity / (0.1 * Taper current)
+const unsigned int savedQmax = 16546;       // Set to -1 if battery data not available
+uint16 savedRaTable[] = {251,251,233,252,178,157,176,189,172,165,218,267,550,1431,2278};
+#endif //BAT_4
+
+
+// BAT_5 (Samsung_25R-Grn): 2500mAh@3.6V Taper=108 Qmax=16420
+#ifdef BAT_5
+const unsigned int designCapacity = 2500;   // (mAh)
+const unsigned int designEnergy = 2500*3.6; // = Capacity * Nominal Voltage
+const unsigned int taperRate = 108;         // = Capacity / (0.1 * Taper current)
+const unsigned int savedQmax = 16420;       // Set to -1 if battery data not available
+uint16 savedRaTable[] = {174,174,166,186,136,122,142,155,139,139,193,235,464,1213,1930};
 #endif //BAT_5
+
+
+// BAT_6 (Samsung_25R-Grn x 2): 2500mAh@3.6V Taper=108 Qmax=16420
+#ifdef BAT_6
+const unsigned int designCapacity = 5000;   // (mAh)
+const unsigned int designEnergy = 5000*3.6; // = Capacity * Nominal Voltage
+const unsigned int taperRate = 108;         // = Capacity / (0.1 * Taper current)
+const unsigned int savedQmax = 16420;       // Set to -1 if battery data not available
+uint16 savedRaTable[] = {87,87,83,93,68,61,71,77,69,69,96,117,232,606,965};
+#endif //BAT_6
 
 
 // Default Qmax = 16384
 // Default R_a Table = {102,102,99,107,72,59,62,63,53,47,60,70,140,369,588};
+
 
 //
 //  Additional BQ27441 Data Memory Access functions not available in Sparkfun library,
