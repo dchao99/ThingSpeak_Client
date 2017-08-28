@@ -42,19 +42,19 @@ Deep-Sleep:
 #define BQ27441_FUEL_GAUGE               // BQ27441 Impedance Track Fuel Gauge
 #define DEBUG_BQ27441_IT                 // Debug BQ27441 Impedance Tracking algorithm
 #define I2C_BME280_ADDR 0x76             // BME280 I2C address
-#define VOLT_DIV_CONST (4.43*1.05/1.023) // A0 voltage divider constant (Vin_max*Vref/1.023)(mV)
+#define VOLT_DIV_CONST (4.44*1.05/1.023) // A0 voltage divider constant (Vin_max*Vref/1.023)(mV)
                                          // WeMos BatShield: Vin = 4.49
-                                         // LM3671 Shield:   Vin = 4.43
+                                         // LM3671 Shield:   Vin = 4.44
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 char hostString[16]  = {0};
 const unsigned long wifiConnectTimeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channelID     = 293299;                // Channel ID for ThingSpeak 
-String writeAPIKey      = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+String writeAPIKey      = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* apiEndpoint = "api.thingspeak.com";  // URL
 const int uploadInterval =  30 * 1000;      // External power: posting data every 30 sec
 const uint32 sleepTimer  = 060 * 1000000;   // Normal battery: Deep sleep timer = 60 sec
@@ -63,7 +63,7 @@ const uint32 hiberTimer  = 150 * 1000000;   // Hibernate: Deep sleep timer = 2.5
 // ESP8266 settings
 const int rechgVoltage = 4130;   // (mV) Recharging threshold, above -> battery full/charging 
 const int hiberVoltage = 3500;   // (mV) Hibernate voltage (SoC~15%) -> reduce upload frequency
-const int underVoltage = 3070;   // (mV) Under voltage (UVLO) -> shut-down immediately
+const int underVoltage = 3100;   // (mV) Under voltage (UVLO) -> shut-down immediately
 const int floatVoltage = 500;    // (mV) No battery, VBAT is floating
 enum battery { VBAT_FLOAT, VBAT_CRITICAL, VBAT_LOW, VBAT_NORMAL, VBAT_FULL } wemosBattery;
 

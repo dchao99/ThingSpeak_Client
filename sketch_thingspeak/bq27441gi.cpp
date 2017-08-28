@@ -9,19 +9,19 @@
 #include "bq27441gi.h"
 
 
-#define BAT_6
+#define BAT_1
 
 // BAT_1 (eBay_803035)
 // BAT_2 (PKCell_803860)
 // BAT_3 (Panasonic_B-Grn)
 // BAT_4 (Samsung_30Q-Pink)
 // BAT_5 (Samsung_25R-Grn)
-
+// BAT_6 (Samsung_30Q-Pink x 2)
 
 
 // BQ27441 Fuel Gauge Golden Image
 // Note: On Sparkfun BS, R_iset is changed to 825Ω, the new I_term is (0.1 * 890/820) = 110mA.
-//       If bat < 850mAh, Taper current = I-term + 90mA, otherwise Taper current = 0.1 C (±10%)
+//       If bat < 1000mAh, Taper current = I-term + 90mA, otherwise Taper current = 0.1 C (±10%)
 
 // BAT_1 (eBay_803035): 850mAh@3.7V Taper=42 Qmax=16469
 #ifdef BAT_1
@@ -73,13 +73,13 @@ uint16 savedRaTable[] = {174,174,166,186,136,122,142,155,139,139,193,235,464,121
 #endif //BAT_5
 
 
-// BAT_6 (Samsung_25R-Grn x 2): 2500mAh@3.6V Taper=108 Qmax=16420
+// BAT_6 (Samsung_30Q-Pink x 2): 3000mAh@3.6V Taper=110 Qmax=16546
 #ifdef BAT_6
-const unsigned int designCapacity = 5000;   // (mAh)
-const unsigned int designEnergy = 5000*3.6; // = Capacity * Nominal Voltage
-const unsigned int taperRate = 108;         // = Capacity / (0.1 * Taper current)
-const unsigned int savedQmax = 16420;       // Set to -1 if battery data not available
-uint16 savedRaTable[] = {87,87,83,93,68,61,71,77,69,69,96,117,232,606,965};
+const unsigned int designCapacity = 6000;   // (mAh)
+const unsigned int designEnergy = 6000*3.6; // = Capacity * Nominal Voltage
+const unsigned int taperRate = 110;         // = Capacity / (0.1 * Taper current)
+const unsigned int savedQmax = 16546;       // Set to -1 if battery data not available
+uint16 savedRaTable[] = {125,125,116,126,89,78,88,94,86,82,109,133,275,715,1139};
 #endif //BAT_6
 
 
