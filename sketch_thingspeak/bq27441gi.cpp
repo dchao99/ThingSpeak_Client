@@ -8,27 +8,28 @@
 #include <SparkFunBQ27441.h>
 #include "bq27441gi.h"
 
+#define DEBUG_ESP8266                    // Debug output to terminal
 
-#define BAT_1
+#define BAT_6
 
 // BAT_1 (eBay_803035)
 // BAT_2 (PKCell_803860)
 // BAT_3 (Panasonic_B-Grn)
 // BAT_4 (Samsung_30Q-Pink)
 // BAT_5 (Samsung_25R-Grn)
-// BAT_6 (Samsung_30Q-Pink x 2)
+// BAT_6 (Panasonic_GA-Red)
 
 
 // BQ27441 Fuel Gauge Golden Image
 // Note: On Sparkfun BS, R_iset is changed to 825Ω, the new I_term is (0.1 * 890/820) = 110mA.
 //       If bat < 1000mAh, Taper current = I-term + 90mA, otherwise Taper current = 0.1 C (±10%)
 
-// BAT_1 (eBay_803035): 850mAh@3.7V Taper=42 Qmax=16469
+// BAT_1 (eBay_803035): 850mAh@3.7V Taper=42 Qmax=16496
 #ifdef BAT_1
 const unsigned int designCapacity = 850;   // (mAh)
 const unsigned int designEnergy = 850*3.7; // = Capacity * Nominal Voltage
 const unsigned int taperRate = 42;         // = Capacity / (0.1 * Taper current)
-const unsigned int savedQmax = 16469;      // Set to -1 if battery data not available
+const unsigned int savedQmax = 16496;      // Set to -1 if battery data not available
 uint16 savedRaTable[] = {67,67,71,82,68,70,84,104,110,116,143,170,301,762,1212};
 #endif //BAT_1
 
@@ -73,13 +74,13 @@ uint16 savedRaTable[] = {174,174,166,186,136,122,142,155,139,139,193,235,464,121
 #endif //BAT_5
 
 
-// BAT_6 (Samsung_30Q-Pink x 2): 3000mAh@3.6V Taper=110 Qmax=16546
+// BAT_6 (Panasonic_GA-Red): 3500mAh@3.6V Taper=110 Qmax=16384
 #ifdef BAT_6
-const unsigned int designCapacity = 6000;   // (mAh)
-const unsigned int designEnergy = 6000*3.6; // = Capacity * Nominal Voltage
-const unsigned int taperRate = 110;         // = Capacity / (0.1 * Taper current)
-const unsigned int savedQmax = 16546;       // Set to -1 if battery data not available
-uint16 savedRaTable[] = {125,125,116,126,89,78,88,94,86,82,109,133,275,715,1139};
+const unsigned int designCapacity = 3500;   // (mAh)
+const unsigned int designEnergy = 3500*3.6; // = Capacity * Nominal Voltage
+const unsigned int taperRate = 112;         // = Capacity / (0.1 * Taper current)
+const unsigned int savedQmax = -1;          // Set to -1 if battery data not available
+uint16 savedRaTable[] = {102,102,99,107,72,59,62,63,53,47,60,70,140,369,588};
 #endif //BAT_6
 
 
@@ -97,7 +98,7 @@ bool bq27441_InitParameters(BQ27441 lipo, int terminateVolt)
   lipo.enterConfig();
   bool success = lipo.setCapacity(designCapacity,designEnergy);
   success = success && lipo.setTaperRate(taperRate);
-  success = success && lipo.setTerminateVoltage(terminateVolt);  //(mV)
+  success = success && lipo.setTerminateVoltage(terminateVolt);
   if (savedQmax == -1) {
     // No golden image. Do a learning cycle.
     success = success && lipo.setUpdateStatusReg(0x03);   // Fast updates of Qmax and R_a Table
@@ -108,8 +109,12 @@ bool bq27441_InitParameters(BQ27441 lipo, int terminateVolt)
   else {
     success = success && lipo.setQmax(savedQmax);
     success = success && lipo.setRaTable(savedRaTable);
-    //success = success && lipo.setUpdateStatusReg(0x03);  // Dev Mode: Fast updates
+    #ifdef DEBUG_ESP8266
+    success = success && lipo.setUpdateStatusReg(0x03);    // Dev Mode: Fast updates
+    Serial.print(F("Fast Updates. "));
+    #else
     success = success && lipo.setUpdateStatusReg(0x80);    // Production: Sealed the Fuel Gauge memory
+    #endif
   }
   lipo.exitConfig(true);     // resim
   return success;
