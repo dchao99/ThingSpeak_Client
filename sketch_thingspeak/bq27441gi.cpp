@@ -92,13 +92,13 @@ uint16 saved_ra_table[] = {174,174,166,186,136,122,142,155,139,139,193,235,464,1
 //  Additional BQ27441 Data Memory Access functions not available in Sparkfun library,
 //  And we can also control the enter and exit of the configuration mode
 //
-bool bq27441_InitParameters(BQ27441 lipo, int terminate_voltage) 
+bool bq27441_InitParameters(BQ27441 lipo, int terminateVoltage) 
 {
   while ( !(lipo.status() & BQ27441_STATUS_INITCOMP) ) { delay(1); }
   lipo.enterConfig();
   bool success = lipo.setCapacity(design_capacity,design_energy);
   success = success && lipo.setTaperRate(taper_rate);
-  success = success && lipo.setTerminateVoltage(terminate_voltage);
+  success = success && lipo.setTerminateVoltage(terminateVoltage);
   if (saved_qmax == -1) {
     // No golden image. Do a learning cycle.
     success = success && lipo.setUpdateStatusReg(0x03);   // Fast updates of Qmax and R_a Table
@@ -128,10 +128,10 @@ uint16 bq27441_ReadQmax(BQ27441 lipo)
   return qmax;
 }
 
-bool bq27441_ReadRaTable(BQ27441 lipo, uint16 * ra_table)
+bool bq27441_ReadRaTable(BQ27441 lipo, uint16 * raTable)
 {
   lipo.enterConfig();
-  lipo.RaTable(ra_table);
+  lipo.RaTable(raTable);
   lipo.exitConfig(false);    // no resim
   return true;
 }
