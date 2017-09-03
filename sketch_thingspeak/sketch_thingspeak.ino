@@ -42,19 +42,21 @@ Deep-Sleep:
 #define BQ27441_FUEL_GAUGE               // BQ27441 Impedance Track Fuel Gauge
 #define DEBUG_BQ27441_IT                 // Debug BQ27441 Impedance Tracking algorithm
 #define I2C_BME280_ADDR 0x76             // BME280 I2C address
-#define VOLT_DIV_CONST (4.44*1.05/1.023) // A0 voltage divider constant (Vin_max*Vref/1.023)(mV)
-                                         // WeMos BatShield: Vin = 4.49
-                                         // LM3671 Shield:   Vin = 4.44
+
+// To read a max 4.2V from V(bat), a voltage divider is used to drop down to Vref=1.06V for the ADC
+const float volt_div_const = 4.44*1.06/1.023; // multiplier = Vin_max*Vref/1.023 (mV)
+                                              // WeMos BatShield: (350KΩ+100KΩ) Vin = 4.47
+                                              // LM3671 Shield:   (340KΩ+100KΩ) Vin = 4.44
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 char hostString[16]  = {0};
 const unsigned long wifiConnectTimeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channelID     = 293299;                // Channel ID for ThingSpeak 
-String writeAPIKey      = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+String writeAPIKey      = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* apiEndpoint = "api.thingspeak.com";  // URL
 const int uploadInterval =  30 * 1000;      // External power: posting data every 30 sec
 const uint32 sleepTimer  = 060 * 1000000;   // Normal battery: Deep sleep timer = 60 sec
@@ -87,10 +89,10 @@ void uploadData(const char* server)
 {
     if (client.connect(server, 80)) {
     
-    int adcVoltage = analogRead(A0) * VOLT_DIV_CONST;
-    // Take average of two readings for better precision
-    delay(1);    // add some delay between two reads
-    adcVoltage = ( adcVoltage + analogRead(A0)*VOLT_DIV_CONST ) / 2 ;
+    int adcVoltage = analogRead(A0) * volt_div_const;
+    // Take average of two readings to get rid of noise
+    delay(1);
+    adcVoltage = ( adcVoltage + analogRead(A0)*volt_div_const ) / 2 ;
     
     String thingStatus;
     if (adcVoltage < floatVoltage) {
@@ -371,7 +373,8 @@ void setup()
 // Arduino loop entry point -> Normal http client 
 // Enter only if external USB power or battery is fully charged
 //
-void loop() {
+void loop() 
+{
   delay(uploadInterval);
   uploadData(apiEndpoint);
 
@@ -388,6 +391,5 @@ void loop() {
     case VBAT_FULL:
       break;
   }
-
 }  // end of loop
 

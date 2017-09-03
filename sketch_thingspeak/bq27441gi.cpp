@@ -8,12 +8,12 @@
 #include <SparkFunBQ27441.h>
 #include "bq27441gi.h"
 
-#define DEBUG_BQ27441   // Debug output to terminal
+#define DEBUG_BQ27441   // Debugging mode
 
 //#define BAT_1         // (eBay_803035)
 //#define BAT_2         // (PKCell_803860)
 //#define BAT_3         // (Panasonic_B-Grn)
-#define BAT_4           // (Panasonic_GA-Red)
+#define BAT_4         // (Panasonic_GA-Red)
 //#define BAT_5         // (Samsung_30Q-Pink)
 //#define BAT_6         // (Samsung_25R-Grn)
 
@@ -52,12 +52,12 @@ uint16 savedRaTable[] = {28,284,280,306,210,175,189,195,169,155,200,240,481,1262
 #endif //BAT_3
 
 
-// BAT_4 (Panasonic_GA-Red): 3500mAh@3.6V Taper=113 Qmax=16576
+// BAT_4 (Panasonic_GA-Red): 3500mAh@3.6V Taper=113 Qmax=16598
 #ifdef BAT_4
 const unsigned int designCapacity = 3500;   // (mAh)
 const unsigned int designEnergy = 3500*3.6; // = Capacity * Nominal Voltage
 const unsigned int taperRate = 113;         // = Capacity / (0.1 * Taper current)
-const unsigned int savedQmax = 16576;       // Set to -1 if battery data not available
+const unsigned int savedQmax = 16598;       // Set to -1 if battery data not available
 uint16 savedRaTable[] = {30,286,278,303,208,175,187,195,167,153,199,237,476,1251,1994};
 #endif //BAT_4
 
