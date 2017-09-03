@@ -50,12 +50,12 @@ const float volt_div_const = 4.44*1.06/1.023; // multiplier = Vin_max*Vref/1.023
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 const unsigned long wifi_connect_timeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channel_id     = 293299;                // Channel ID for ThingSpeak 
-String write_api_key     = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+String write_api_key     = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* api_endpoint = "api.thingspeak.com";  // URL
 const int upload_interval    =  30 * 1000;        // External power: posting data every 30 sec
 const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Deep sleep timer = 60 sec
@@ -66,10 +66,10 @@ const int recharge_voltage  = 4130;  // (mV) Recharging threshold, above -> batt
 const int hibernate_voltage = 3550;  // (mV) Hibernate voltage (SoC~10%) -> reduce upload frequency
 const int lockout_voltage   = 3100;  // (mV) Under voltage (UVLO) -> shut-down immediately
 const int floating_voltage  = 500;   // (mV) No battery, VBAT is floating
-enum battery { VBAT_FLOAT, VBAT_CRITICAL, VBAT_LOW, VBAT_NORMAL, VBAT_FULL } wemosBattery;
+enum Battery { BATTERY_FLOAT, BATTERY_CRITICAL, BATTERY_LOW, BATTERY_NORMAL, BATTERY_FULL } wemosBattery;
 
 // BQ27441 settings
-// Note: there is a 50mV drop between V(bat) and V(A0)
+// Note: there is a small 50mV drop between V(bat) and V(A0)
 const int terminate_voltage = 3000;  // (mV) Host system lowest operating voltage 
 
 // BME280 settings
@@ -95,25 +95,25 @@ void uploadData(const char * server)
     
     String thingStatus;
     if (adcVoltage < floating_voltage) {
-      wemosBattery = VBAT_FLOAT;
+      wemosBattery = BATTERY_FLOAT;
       thingStatus = F("No Battery ");
     }
     else if (adcVoltage < lockout_voltage) {
-      wemosBattery = VBAT_CRITICAL;
+      wemosBattery = BATTERY_CRITICAL;
       thingStatus = F("Battery Critical ");
     }
     #ifndef DEBUG_MAX_POWER  // Skip deep-sleep modes for fastest updates and battery discharge
     else if (adcVoltage < hibernate_voltage) {
-      wemosBattery = VBAT_LOW;
+      wemosBattery = BATTERY_LOW;
       thingStatus = F("Battery Low ");
     }
     else if (adcVoltage < recharge_voltage) {
-      wemosBattery = VBAT_NORMAL;
+      wemosBattery = BATTERY_NORMAL;
       thingStatus = F("Battery Normal ");
     }
     #endif //DEBUG_MAX_POWER
     else {
-      wemosBattery = VBAT_FULL;
+      wemosBattery = BATTERY_FULL;
       thingStatus = F("Battery Full ");
     }
 
@@ -334,32 +334,32 @@ void setup()
 
   switch(wemosBattery) {
     
-    case VBAT_FLOAT:
+    case BATTERY_FLOAT:
       // If VBAT is floating and code is running, we must be external power
       #ifdef DEBUG_ESP8266
       Serial.println(F("External power, exit deep-sleep."));
       #endif
       break;
 
-    case VBAT_CRITICAL:
+    case BATTERY_CRITICAL:
       #ifdef DEBUG_ESP8266
       Serial.println(F("Warning: Under voltage detected. Shut-Down ESP8266."));
       #endif
       ESP.deepSleep(0);  
 
-    case VBAT_LOW:
+    case BATTERY_LOW:
       #ifdef DEBUG_ESP8266
       Serial.println(F("Warning: Hibernate voltage detected. Long deep-Sleep timer."));
       #endif
       ESP.deepSleep(hibernate_timer);
 
-    case VBAT_NORMAL:
+    case BATTERY_NORMAL:
       #ifdef DEBUG_ESP8266
       Serial.println(F("Running on battery, short deep-sleep timer."));
       #endif
       ESP.deepSleep(sleep_timer);  
    
-    case VBAT_FULL:
+    case BATTERY_FULL:
       #ifdef DEBUG_ESP8266
       Serial.println(F("Battery fully charged or external power, exit deep-sleep."));
       #endif
@@ -379,15 +379,15 @@ void loop()
 
   // If running on battery, exit main loop and use deep-sleep to save battery
   switch(wemosBattery) {
-    case VBAT_CRITICAL:
-    case VBAT_LOW:
-    case VBAT_NORMAL:
+    case BATTERY_CRITICAL:
+    case BATTERY_LOW:
+    case BATTERY_NORMAL:
       #ifdef DEBUG_ESP8266
       Serial.println(F("Running on battery, set deep-sleep mode."));
       #endif
       ESP.deepSleep(sleep_timer);  
-    case VBAT_FLOAT:
-    case VBAT_FULL:
+    case BATTERY_FLOAT:
+    case BATTERY_FULL:
       break;
   }
 }  // end of loop
