@@ -66,7 +66,8 @@ const int recharge_voltage  = 4130;  // (mV) Recharging threshold, above -> batt
 const int hibernate_voltage = 3550;  // (mV) Hibernate voltage (SoC~10%) -> reduce upload frequency
 const int lockout_voltage   = 3100;  // (mV) Under voltage (UVLO) -> shut-down immediately
 const int floating_voltage  = 500;   // (mV) No battery, VBAT is floating
-enum Battery { BATTERY_FLOAT, BATTERY_CRITICAL, BATTERY_LOW, BATTERY_NORMAL, BATTERY_FULL } wemosBattery;
+enum Battery { BATTERY_FLOAT, BATTERY_CRITICAL, BATTERY_LOW, BATTERY_NORMAL, BATTERY_FULL };
+Battery wemosBattery;
 
 // BQ27441 settings
 // Note: there is a small 50mV drop between V(bat) and V(A0)
