@@ -50,13 +50,13 @@ const float volt_div_const = 4.44*1.06/1.023; // multiplier = Vin_max*Vref/1.023
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "nintendo";         // your Wi-Fi network password
+const char* password = "xxxxxxxx";         // your Wi-Fi network password
 char hostString[16]  = {0};
 const unsigned long wifiConnectTimeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channelID     = 293299;                // Channel ID for ThingSpeak 
-String writeAPIKey      = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
+String writeAPIKey      = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
 const char* apiEndpoint = "api.thingspeak.com";  // URL
 const int uploadInterval =  30 * 1000;      // External power: posting data every 30 sec
 const uint32 sleepTimer  = 060 * 1000000;   // Normal battery: Deep sleep timer = 60 sec
