@@ -50,28 +50,27 @@ const float volt_div_const = 4.44*1.06/1.023; // multiplier = Vin_max*Vref/1.023
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
-char hostString[16]  = {0};
-const unsigned long wifiConnectTimeout = 10 * 1000;  // 10 seconds
+const char* password = "nintendo";         // your Wi-Fi network password
+const unsigned long wifi_connect_timeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
-const int channelID     = 293299;                // Channel ID for ThingSpeak 
-String writeAPIKey      = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
-const char* apiEndpoint = "api.thingspeak.com";  // URL
-const int uploadInterval =  30 * 1000;      // External power: posting data every 30 sec
-const uint32 sleepTimer  = 060 * 1000000;   // Normal battery: Deep sleep timer = 60 sec
-const uint32 hiberTimer  = 150 * 1000000;   // Hibernate: Deep sleep timer = 2.5 min
+const int channel_id     = 293299;                // Channel ID for ThingSpeak 
+String write_api_key     = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
+const char* api_endpoint = "api.thingspeak.com";  // URL
+const int upload_interval    =  30 * 1000;        // External power: posting data every 30 sec
+const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Deep sleep timer = 60 sec
+const uint32 hibernate_timer = 150 * 1000000;     // Hibernate: Deep sleep timer = 2.5 min
 
 // ESP8266 settings
-const int rechgVoltage = 4130;   // (mV) Recharging threshold, above -> battery full/charging 
-const int hiberVoltage = 3550;   // (mV) Hibernate voltage (SoC~10%) -> reduce upload frequency
-const int underVoltage = 3100;   // (mV) Under voltage (UVLO) -> shut-down immediately
-const int floatVoltage = 500;    // (mV) No battery, VBAT is floating
+const int recharge_voltage  = 4130;  // (mV) Recharging threshold, above -> battery full/charging 
+const int hibernate_voltage = 3550;  // (mV) Hibernate voltage (SoC~10%) -> reduce upload frequency
+const int lockout_voltage   = 3100;  // (mV) Under voltage (UVLO) -> shut-down immediately
+const int floating_voltage  = 500;   // (mV) No battery, VBAT is floating
 enum battery { VBAT_FLOAT, VBAT_CRITICAL, VBAT_LOW, VBAT_NORMAL, VBAT_FULL } wemosBattery;
 
 // BQ27441 settings
-// Note: there is a 0.05V drop between V(bat) and V(A0)
-const int terminateVolt = 3100;  // (mV) Host system lowest operating voltage 
+// Note: there is a 0.03V drop between V(bat) and V(A0)
+const int terminate_voltage = 3000;  // (mV) Host system lowest operating voltage 
 
 // BME280 settings
 const float thingAltitude = 30;     // My altitude (meters)
@@ -95,20 +94,20 @@ void uploadData(const char* server)
     adcVoltage = ( adcVoltage + analogRead(A0)*volt_div_const ) / 2 ;
     
     String thingStatus;
-    if (adcVoltage < floatVoltage) {
+    if (adcVoltage < floating_voltage) {
       wemosBattery = VBAT_FLOAT;
       thingStatus = F("No Battery ");
     }
-    else if (adcVoltage < underVoltage) {
+    else if (adcVoltage < lockout_voltage) {
       wemosBattery = VBAT_CRITICAL;
       thingStatus = F("Battery Critical ");
     }
     #ifndef DEBUG_MAX_POWER  // Skip deep-sleep modes for fastest updates and battery discharge
-    else if (adcVoltage < hiberVoltage) {
+    else if (adcVoltage < hibernate_voltage) {
       wemosBattery = VBAT_LOW;
       thingStatus = F("Battery Low ");
     }
-    else if (adcVoltage < rechgVoltage) {
+    else if (adcVoltage < recharge_voltage) {
       wemosBattery = VBAT_NORMAL;
       thingStatus = F("Battery Normal ");
     }
@@ -224,7 +223,7 @@ void uploadData(const char* server)
     client.print( F("POST /update HTTP/1.1\n") );
     client.print( F("Host: api.thingspeak.com\nConnection: close\n") );
     client.print( F("X-THINGSPEAKAPIKEY: ") );
-    client.print( writeAPIKey );
+    client.print( write_api_key );
     client.print( F("\nContent-Type: application/x-www-form-urlencoded\n") );
     client.print( F("Content-Length: ") );
     client.print( body.length() );
@@ -243,8 +242,7 @@ void setup()
 {
   #ifdef DEBUG_ESP8266
   Serial.begin(115200);
-  Serial.setTimeout(2000);
-  while(!Serial) { }     // Wait for serial to initialize.
+  delay(10);
   Serial.println();
   Serial.println();
   #endif
@@ -278,7 +276,7 @@ void setup()
     #ifdef DEBUG_ESP8266
     Serial.print(F("BQ27441: POR detected. "));
     #endif 
-    if ( bq27441_InitParameters(lipo,terminateVolt) ) {
+    if ( bq27441_InitParameters(lipo,terminate_voltage) ) {
       #ifdef DEBUG_ESP8266
       Serial.println(F("Fuel Gauge initialized."));
       #endif 
@@ -292,6 +290,7 @@ void setup()
   #endif //BQ27441_FUEL_GAUGE
   
   // Make the hostname up from our Chip ID (MAC addr)
+  char hostString[16]  = {0};
   sprintf(hostString, "esp8266_%06x", ESP.getChipId());
 
   // Connecting to a WiFi network
@@ -315,12 +314,12 @@ void setup()
     #ifdef DEBUG_ESP8266
     Serial.print(".");
     #endif 
-    if ( (millis()-wifiConnectStart) > wifiConnectTimeout ) {
+    if ( (millis()-wifiConnectStart) > wifi_connect_timeout ) {
       #ifdef DEBUG_ESP8266
       Serial.println();
       Serial.println(F("Warning: Unable to connect to WiFi."));
       #endif 
-      ESP.deepSleep(sleepTimer);
+      ESP.deepSleep(sleep_timer);
     }
   }
 
@@ -331,7 +330,7 @@ void setup()
   Serial.println(WiFi.localIP());
   #endif 
 
-  uploadData(apiEndpoint);
+  uploadData(api_endpoint);
 
   switch(wemosBattery) {
     
@@ -352,13 +351,13 @@ void setup()
       #ifdef DEBUG_ESP8266
       Serial.println(F("Warning: Hibernate voltage detected. Long deep-Sleep timer."));
       #endif
-      ESP.deepSleep(hiberTimer);
+      ESP.deepSleep(hibernate_timer);
 
     case VBAT_NORMAL:
       #ifdef DEBUG_ESP8266
       Serial.println(F("Running on battery, short deep-sleep timer."));
       #endif
-      ESP.deepSleep(sleepTimer);  
+      ESP.deepSleep(sleep_timer);  
    
     case VBAT_FULL:
       #ifdef DEBUG_ESP8266
@@ -375,8 +374,8 @@ void setup()
 //
 void loop() 
 {
-  delay(uploadInterval);
-  uploadData(apiEndpoint);
+  delay(upload_interval);
+  uploadData(api_endpoint);
 
   // If running on battery, exit main loop and use deep-sleep to save battery
   switch(wemosBattery) {
@@ -386,7 +385,7 @@ void loop()
       #ifdef DEBUG_ESP8266
       Serial.println(F("Running on battery, set deep-sleep mode."));
       #endif
-      ESP.deepSleep(sleepTimer);  
+      ESP.deepSleep(sleep_timer);  
     case VBAT_FLOAT:
     case VBAT_FULL:
       break;
