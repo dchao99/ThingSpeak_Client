@@ -50,12 +50,12 @@ const float volt_div_const = 4.44*1.06/1.023; // multiplier = Vin_max*Vref/1.023
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 const unsigned long wifi_connect_timeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channel_id     = 293299;                // Channel ID for ThingSpeak 
-String write_api_key     = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+String write_api_key     = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* api_endpoint = "api.thingspeak.com";  // URL
 const int upload_interval    =  30 * 1000;        // External power: posting data every 30 sec
 const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Deep sleep timer = 60 sec
@@ -74,12 +74,16 @@ Battery wemosBattery;
 const int terminate_voltage = 3000;  // (mV) Host system lowest operating voltage 
 
 // BME280 settings
-const float thingAltitude = 30;     // My altitude (meters)
+const float thing_altitude = 30;     // My altitude (meters)
 
 // Initialize class objects
 WiFiClient client;
+#ifdef I2C_BME280_ADDR
 Adafruit_BME280 bme; 
+#endif
+#ifdef BQ27441_FUEL_GAUGE
 BQ27441 lipo;
+#endif
 
 
 //
@@ -120,9 +124,9 @@ void uploadData(const char * server)
 
     #ifdef I2C_BME280_ADDR
     // Measure BME280 sensors
-    float bmeTemp     = bme.readTemperature();
+    float bmeTemperature = bme.readTemperature();
     float bmeHumidity = bme.readHumidity();
-    float seaLevelPressure = bme.seaLevelForAltitude(thingAltitude,bme.readPressure()) / 100.0F; //(hPa)
+    float seaLevelPressure = bme.seaLevelForAltitude(thing_altitude,bme.readPressure()) / 100.0F; //(hPa)
     #endif //I2C_BME280_ADDR
        
     #ifdef BQ27441_FUEL_GAUGE
@@ -167,7 +171,7 @@ void uploadData(const char * server)
     body += String(volt,3);
     #ifdef I2C_BME280_ADDR
     body += F("&field2=");
-    body += String(bmeTemp);
+    body += String(bmeTemperature);
     body += F("&field3=");
     body += String(bmeHumidity);           
     body += F("&field4=");
@@ -188,7 +192,7 @@ void uploadData(const char * server)
     Serial.println(String(volt,3)+"V"); 
     #ifdef I2C_BME280_ADDR
     Serial.print(F("BME280: "));
-    Serial.println(String(bmeTemp)+"C, " + String(bmeHumidity) + "%, " + String(seaLevelPressure) + "hPa"); 
+    Serial.println(String(bmeTemperature)+"C, " + String(bmeHumidity) + "%, " + String(seaLevelPressure) + "hPa"); 
     #endif //I2C_BME280_ADDR
     #ifdef BQ27441_FUEL_GAUGE    
     Serial.print(F("BQ27441: "));
@@ -253,7 +257,7 @@ void setup()
   #ifdef I2C_BME280_ADDR
   if (!bme.begin(I2C_BME280_ADDR)) {
     #ifdef DEBUG_ESP8266
-    Serial.println(F("Error: Couldn't find BME280 sensor."));
+    Serial.println(F("Error: Couldn't find a BME280 sensor."));
     #endif
     ESP.deepSleep(0);
   }
