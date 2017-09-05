@@ -21,7 +21,6 @@
 // BQ27441 Fuel Gauge Golden Image
 // Note: On Sparkfun BS, R_iset is changed to 825Ω, the new I_term is (0.1 * 890/820) = 110mA.
 //       If bat < 1000mAh, Taper current = I-term + 90mA, otherwise Taper current = 0.1 C (±10%)
-//       * = No BMS Protection PCB
 
 // BAT_1 (eBay_803035): 850mAh@3.7V Taper=42 Qmax=16496
 #ifdef BAT_1
@@ -53,7 +52,7 @@ uint16 saved_ra_table[] = {28,284,280,306,210,175,189,195,169,155,200,240,481,12
 #endif //BAT_3
 
 
-// BAT_4 (Sanyo_GA-Red*): 3500mAh@3.6V Taper=113 Qmax=16447
+// BAT_4 (Sanyo_GA-Red): 3500mAh@3.6V Taper=113 Qmax=16447
 #ifdef BAT_4
 const unsigned int design_capacity = 3500;   // (mAh)
 const unsigned int design_energy = 3500*3.6; // = Capacity * Nominal Voltage
@@ -80,7 +79,8 @@ const unsigned int design_capacity = 2500;   // (mAh)
 const unsigned int design_energy = 2500*3.6; // = Capacity * Nominal Voltage
 const unsigned int taper_rate = 108;         // = Capacity / (0.1 * Taper current)
 const unsigned int saved_qmax = 16420;       // Set to -1 if battery data not available
-uint16 saved_ra_table[] = {174,174,166,186,136,122,142,155,139,139,193,235,464,1213,1930};
+uint16 saved_ra_table[] = {251,251,238,269,202,187,225,253,231,237,335,415,813,2119,3363};
+                       /* {174,174,166,186,136,122,142,155,139,139,193,235,464,1213,1930} */
 #endif //BAT_6
 
 
