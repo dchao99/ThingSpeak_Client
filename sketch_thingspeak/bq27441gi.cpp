@@ -74,7 +74,7 @@ const unsigned int design_energy = 2500*3.6; // = Capacity * Nominal Voltage
 const unsigned int taper_rate = 108;         // = Capacity / (0.1 * Taper current)
 const unsigned int saved_qmax = 16420;       // Set to -1 if battery data not available
 uint16 saved_ra_table[] = {251,251,238,269,202,187,225,253,231,237,335,415,813,2119,3363};
-                       /* {174,174,166,186,136,122,142,155,139,139,193,235,464,1213,1930} */
+                        /*{174,174,166,186,136,122,142,155,139,139,193,235,464,1213,1930}*/
 #endif //BAT_6
 
 // Default Qmax = 16384
