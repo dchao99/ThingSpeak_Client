@@ -38,24 +38,23 @@ Deep-Sleep:
 
 // Compiler directives, comment out to disable
 #define DEBUG_ESP8266                    // Debug output to terminal
-//#define DEBUG_MAX_POWER                // Debug mode for fastest updates and battery discharge
+#define DEBUG_MAX_POWER                // Debug mode for fastest updates and battery discharge
 #define BQ27441_FUEL_GAUGE               // BQ27441 Impedance Track Fuel Gauge
-#define DEBUG_BQ27441_IT                 // Debug BQ27441 Impedance Tracking algorithm
 #define I2C_BME280_ADDR 0x76             // BME280 I2C address
 
 // To read a max 4.2V from V(bat), a voltage divider is used to drop down to Vref=1.06V for the ADC
-const float volt_div_const = 4.44*1.06/1.023; // multiplier = Vin_max*Vref/1.023 (mV)
-                                              // WeMos BatShield: (350KΩ+100KΩ) Vin = 4.47
-                                              // LM3671 Shield:   (340KΩ+100KΩ) Vin = 4.44
+const float volt_div_const = 4.45*1.06/1.023; // multiplier = Vin_max*Vref/1.023 (mV)
+                                              // WeMos BatShield: (350KΩ+100KΩ) Vin = 4.49
+                                              // LM3671 Shield:   (340KΩ+100KΩ) Vin = 4.45
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 const unsigned long wifi_connect_timeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channel_id     = 293299;                // Channel ID for ThingSpeak 
-String write_api_key     = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+String write_api_key     = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* api_endpoint = "api.thingspeak.com";  // URL
 const int upload_interval    =  30 * 1000;        // External power: posting data every 30 sec
 const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Deep sleep timer = 60 sec
@@ -71,7 +70,7 @@ Battery wemosBattery;
 
 // BQ27441 settings
 // Note: there is a small 20mV (@100mA) to 50mV (@1A) dropout between V(bat) and V(A0)
-const int terminate_voltage = 3000;  // (mV) Host system lowest operating voltage 
+const int terminate_voltage = 3100;  // (mV) Host system lowest operating voltage 
 
 // BME280 settings
 const float thing_altitude = 30;     // My altitude (meters)
@@ -138,32 +137,31 @@ void uploadData(const char * server)
     unsigned int lipoCapacity = lipo.capacity(AVAIL_FULL);
     uint8  lipoSoHStat = lipo.soh(SOH_STAT);
     uint16 lipoFlags = lipo.flags();
-    thingStatus += String(lipoCurrent) + "mA (" + String(lipoCapacity) + "mAh"+")";
+    thingStatus += "(" + String(lipoCapacity) + "mAh"+")";
     if (lipoSoHStat == 0x02)   // SoH based on default Qmax - Estimation
       thingStatus += "*";
     if (lipoSoHStat == 0x03)   // SoH based on learned Qmax - Most accurate
       thingStatus += "**";
+    thingStatus += " " + String(lipoCurrent) + "mA [ ";
     if (lipoFlags & BQ27441_FLAG_DSG)
-      thingStatus += " Dsg";
+      thingStatus += "Dsg ";
     if (lipoFlags & BQ27441_FLAG_FC)
-      thingStatus += " Ful";
-    #ifdef DEBUG_BQ27441_IT
+      thingStatus += "Ful ";
     uint16 lipoGaugeStat = lipo.status();
     uint16 lipoQmax = bq27441_ReadQmax(lipo);
     uint16 lipoRaTable[15];
     bq27441_ReadRaTable(lipo,lipoRaTable);
     if (lipoGaugeStat & BQ27441_STATUS_VOK)
-      thingStatus += " Vok";
+      thingStatus += "Vok ";
     if (lipoGaugeStat & BQ27441_STATUS_RUP_DIS)
-      thingStatus += " Rdi";
+      thingStatus += "Rdi ";
     if (lipoGaugeStat & BQ27441_STATUS_QMAX_UP)  
-      thingStatus += " Qup";
+      thingStatus += "Qup ";
     if (lipoGaugeStat & BQ27441_STATUS_RES_UP)
-      thingStatus += " Rup";
-    thingStatus +=  " Q=" + String(lipoQmax) + " R=";
+      thingStatus += "Rup ";
+    thingStatus +=  "] Q=" + String(lipoQmax) + " R=";
     for (int i = 0; i < 15; i++)
       thingStatus += String(lipoRaTable[i])+",";
-    #endif //DEBUG_BQ27441_IT
     #endif //BQ27441_FUEL_GAUGE
 
     // Construct API request body
@@ -196,30 +194,30 @@ void uploadData(const char * server)
     #endif //I2C_BME280_ADDR
     #ifdef BQ27441_FUEL_GAUGE    
     Serial.print(F("BQ27441: "));
-    Serial.print(String(lipoVoltage,3) + "V, " + String(lipoSOC) + "%, " + String(lipoCurrent) + "mA ");
     Serial.print("(Bat=" + String(lipoCapacity) + "mAh" + ")");
     if (lipoSoHStat == 0x02)   // SoH based on default Qmax - Estimation
       Serial.print("*");
     if (lipoSoHStat == 0x03)   // SoH based on learned Qmax - Most accurate
       Serial.print("**");
+    Serial.print(" "+String(lipoVoltage,3) + "V, " + String(lipoSOC) + "%, " + String(lipoCurrent) + "mA [ ");
     if (lipoFlags & BQ27441_FLAG_DSG)
-      Serial.print(" Dsg");
+      Serial.print("Dsg ");
     if (lipoFlags & BQ27441_FLAG_FC)
-      Serial.print(" Ful");
-    #ifdef DEBUG_BQ27441_IT
+      Serial.print("Ful ");
     if (lipoGaugeStat & BQ27441_STATUS_VOK)
-      Serial.print(" Vok");
+      Serial.print("Vok ");
     if (lipoGaugeStat & BQ27441_STATUS_RUP_DIS)
-      Serial.print(" Rdi");
+      Serial.print("Rdi ");
     if (lipoGaugeStat & BQ27441_STATUS_QMAX_UP)  
-      Serial.print(" Qup");
+      Serial.print("Qup ");
     if (lipoGaugeStat & BQ27441_STATUS_RES_UP)
-      Serial.print(" Rup");
-    Serial.print(", Qmax="); Serial.println(lipoQmax);
+      Serial.print("Rup ");
+    Serial.print("] Qmax="); Serial.println(lipoQmax);
     Serial.print("R_a=");
-    for (int i = 0; i < 15; i++)
-      Serial.print(lipoRaTable[i]); Serial.print(",");
-    #endif //DEBUG_BQ27441_IT
+    for (int i = 0; i < 15; i++) {
+      Serial.print(lipoRaTable[i]); 
+      Serial.print(",");
+    }
     Serial.println();
     #endif //BQ27441_FUEL_GAUGE
     #endif //DEBUG_ESP8266

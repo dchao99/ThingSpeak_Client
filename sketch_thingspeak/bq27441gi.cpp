@@ -10,12 +10,12 @@
 
 #define DEBUG_BQ27441   // Debugging mode
 
-//#define BAT_1         // (eBay_803035)
+#define BAT_1         // (eBay_803035)
 //#define BAT_2         // (PKCell_803860)
 //#define BAT_3         // (Panasonic_B-Grn)
 //#define BAT_4         // (Sanyo_GA-Red)
 //#define BAT_5         // (Samsung_30Q-Pink)
-#define BAT_6         // (Samsung_25R-Grn)
+//#define BAT_6         // (Samsung_25R-Grn)
 
 
 // BQ27441 Fuel Gauge Golden Image
