@@ -50,12 +50,12 @@ const float volt_div_const = 4.44*1.06/1.023; // multiplier = Vin_max*Vref/1.023
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 const unsigned long wifi_connect_timeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channel_id     = 293299;                // Channel ID for ThingSpeak 
-String write_api_key     = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+String write_api_key     = "QPRPTUT1SYYLEEDS";    // write API key for ThingSpeak Channel
 const char* api_endpoint = "api.thingspeak.com";  // URL
 const int upload_interval    =  30 * 1000;        // External power: posting data every 30 sec
 const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Deep sleep timer = 60 sec
@@ -93,26 +93,27 @@ void uploadData(const char * server)
 {
     if (client.connect(server, 80)) {
     
-    int adcVoltage = analogRead(A0) * volt_div_const;
+    int adc_mV = analogRead(A0) * volt_div_const;
     // Take average of two readings to get rid of noise
     delay(1);
-    adcVoltage = ( adcVoltage + analogRead(A0)*volt_div_const ) / 2 ;
+    adc_mV = ( adc_mV + analogRead(A0)*volt_div_const ) / 2 ;
+    float adcVoltage = adc_mV/1000.0F;
     
     String thingStatus;
-    if (adcVoltage < floating_voltage) {
+    if (adc_mV < floating_voltage) {
       wemosBattery = BATTERY_FLOAT;
       thingStatus = F("No Battery ");
     }
-    else if (adcVoltage < lockout_voltage) {
+    else if (adc_mV < lockout_voltage) {
       wemosBattery = BATTERY_CRITICAL;
       thingStatus = F("Battery Critical ");
     }
     #ifndef DEBUG_MAX_POWER  // Skip deep-sleep modes for fastest updates and battery discharge
-    else if (adcVoltage < hibernate_voltage) {
+    else if (adc_mV < hibernate_voltage) {
       wemosBattery = BATTERY_LOW;
       thingStatus = F("Battery Low ");
     }
-    else if (adcVoltage < recharge_voltage) {
+    else if (adc_mV < recharge_voltage) {
       wemosBattery = BATTERY_NORMAL;
       thingStatus = F("Battery Normal ");
     }
@@ -167,13 +168,12 @@ void uploadData(const char * server)
 
     // Construct API request body
     String body = F("field1=");
-    float volt = adcVoltage/1000.0F;
-    body += String(volt,3);
+    body += String(adcVoltage,3);
     #ifdef I2C_BME280_ADDR
     body += F("&field2=");
     body += String(bmeTemperature);
     body += F("&field3=");
-    body += String(bmeHumidity);           
+    body += String(bmeHumidity);
     body += F("&field4=");
     body += String(seaLevelPressure);
     #endif //I2C_BME280_ADDR
@@ -189,10 +189,10 @@ void uploadData(const char * server)
 
     #ifdef DEBUG_ESP8266
     Serial.print(F("ESP8266: "));
-    Serial.println(String(volt,3)+"V"); 
+    Serial.print(adcVoltage,3); Serial.println("V"); 
     #ifdef I2C_BME280_ADDR
     Serial.print(F("BME280: "));
-    Serial.println(String(bmeTemperature)+"C, " + String(bmeHumidity) + "%, " + String(seaLevelPressure) + "hPa"); 
+    Serial.println(String(bmeTemperature,1)+"C, " + String(bmeHumidity,1) + "%, " + String(seaLevelPressure,1) + "hPa"); 
     #endif //I2C_BME280_ADDR
     #ifdef BQ27441_FUEL_GAUGE    
     Serial.print(F("BQ27441: "));
@@ -215,10 +215,10 @@ void uploadData(const char * server)
       Serial.print(" Qup");
     if (lipoGaugeStat & BQ27441_STATUS_RES_UP)
       Serial.print(" Rup");
-    Serial.println(" Qmax=" + String(lipoQmax));
-    Serial.print("R_a Table: ");
+    Serial.print(", Qmax="); Serial.println(lipoQmax);
+    Serial.print("R_a=");
     for (int i = 0; i < 15; i++)
-      Serial.print(String(lipoRaTable[i])+",");
+      Serial.print(lipoRaTable[i]); Serial.print(",");
     #endif //DEBUG_BQ27441_IT
     Serial.println();
     #endif //BQ27441_FUEL_GAUGE
