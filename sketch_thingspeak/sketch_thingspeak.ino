@@ -37,10 +37,10 @@ Deep-Sleep:
 #include "bq27441gi.h"
 
 // Compiler directives, comment out to disable
-#define DEBUG_ESP8266                    // Debug output to terminal
-#define DEBUG_MAX_POWER                // Debug mode for fastest updates and battery discharge
-#define BQ27441_FUEL_GAUGE               // BQ27441 Impedance Track Fuel Gauge
-#define I2C_BME280_ADDR 0x76             // BME280 I2C address
+#define USE_SERIAL Serial               // Valid options: Serial and Serial1
+//#define DEBUG_MAX_POWER               // Debug mode for fastest updates and battery discharge
+#define BQ27441_FUEL_GAUGE              // BQ27441 Impedance Track Fuel Gauge
+#define I2C_BME280_ADDR 0x76            // BME280 I2C address
 
 // To read a max 4.2V from V(bat), a voltage divider is used to drop down to Vref=1.06V for the ADC
 const float volt_div_const = 4.45*1.06/1.023; // multiplier = Vin_max*Vref/1.023 (mV)
@@ -49,12 +49,12 @@ const float volt_div_const = 4.45*1.06/1.023; // multiplier = Vin_max*Vref/1.023
 
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 const unsigned long wifi_connect_timeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channel_id     = 293299;                // Channel ID for ThingSpeak 
-String write_api_key     = "XXXXXXXXXXXXXXXX";    // write API key for ThingSpeak Channel
+const String write_api_key = "QPRPTUT1SYYLEEDS";  // write API key for ThingSpeak Channel
 const char* api_endpoint = "api.thingspeak.com";  // URL
 const int upload_interval    =  30 * 1000;        // External power: posting data every 30 sec
 const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Deep sleep timer = 60 sec
@@ -185,153 +185,156 @@ void uploadData(const char * server)
     body += F("&status=");
     body += thingStatus;
 
-    #ifdef DEBUG_ESP8266
-    Serial.print(F("ESP8266: "));
-    Serial.print(adcVoltage,3); Serial.println("V"); 
+    #ifdef USE_SERIAL
+    USE_SERIAL.print(F("ESP8266: "));
+    USE_SERIAL.print(adcVoltage,3); USE_SERIAL.println("V"); 
     #ifdef I2C_BME280_ADDR
-    Serial.print(F("BME280: "));
-    Serial.println(String(bmeTemperature,1)+"C, " + String(bmeHumidity,1) + "%, " + String(seaLevelPressure,1) + "hPa"); 
+    USE_SERIAL.print(F("BME280: "));
+    USE_SERIAL.println(String(bmeTemperature,1)+"C, " + String(bmeHumidity,1) + "%, " + String(seaLevelPressure,1) + "hPa"); 
     #endif //I2C_BME280_ADDR
     #ifdef BQ27441_FUEL_GAUGE    
-    Serial.print(F("BQ27441: "));
-    Serial.print("(Bat=" + String(lipoCapacity) + "mAh" + ")");
+    USE_SERIAL.print(F("BQ27441: "));
+    USE_SERIAL.print("(Bat=" + String(lipoCapacity) + "mAh" + ")");
     if (lipoSoHStat == 0x02)   // SoH based on default Qmax - Estimation
-      Serial.print("*");
+      USE_SERIAL.print("*");
     if (lipoSoHStat == 0x03)   // SoH based on learned Qmax - Most accurate
-      Serial.print("**");
-    Serial.print(" "+String(lipoVoltage,3) + "V, " + String(lipoSOC) + "%, " + String(lipoCurrent) + "mA [ ");
+      USE_SERIAL.print("**");
+    USE_SERIAL.print(" "+String(lipoVoltage,3) + "V, " + String(lipoSOC) + "%, " + String(lipoCurrent) + "mA [ ");
     if (lipoFlags & BQ27441_FLAG_DSG)
-      Serial.print("Dsg ");
+      USE_SERIAL.print("Dsg ");
     if (lipoFlags & BQ27441_FLAG_FC)
-      Serial.print("Ful ");
+      USE_SERIAL.print("Ful ");
     if (lipoGaugeStat & BQ27441_STATUS_VOK)
-      Serial.print("Vok ");
+      USE_SERIAL.print("Vok ");
     if (lipoGaugeStat & BQ27441_STATUS_RUP_DIS)
-      Serial.print("Rdi ");
+      USE_SERIAL.print("Rdi ");
     if (lipoGaugeStat & BQ27441_STATUS_QMAX_UP)  
-      Serial.print("Qup ");
+      USE_SERIAL.print("Qup ");
     if (lipoGaugeStat & BQ27441_STATUS_RES_UP)
-      Serial.print("Rup ");
-    Serial.print("] Qmax="); Serial.println(lipoQmax);
-    Serial.print("R_a=");
+      USE_SERIAL.print("Rup ");
+    USE_SERIAL.print("] Qmax="); USE_SERIAL.println(lipoQmax);
+    USE_SERIAL.print("R_a=");
     for (int i = 0; i < 15; i++) {
-      Serial.print(lipoRaTable[i]); 
-      Serial.print(",");
+      USE_SERIAL.print(lipoRaTable[i]); 
+      USE_SERIAL.print(",");
     }
-    Serial.println();
+    USE_SERIAL.println();
     #endif //BQ27441_FUEL_GAUGE
-    #endif //DEBUG_ESP8266
+    #endif //USE_SERIAL
 
     // Prepare the HTML document to post
     client.print( F("POST /update HTTP/1.1\n") );
-    client.print( F("Host: api.thingspeak.com\nConnection: close\n") );
-    client.print( F("X-THINGSPEAKAPIKEY: ") );
+    client.print( F("Host: api.thingspeak.com\nConnection: close\nX-THINGSPEAKAPIKEY: ") );
     client.print( write_api_key );
-    client.print( F("\nContent-Type: application/x-www-form-urlencoded\n") );
-    client.print( F("Content-Length: ") );
+    client.print( F("\nContent-Type: application/x-www-form-urlencoded\nContent-Length: ") );
     client.print( body.length() );
-    client.print( F("\n\n") );
+    client.print( "\n\n" );
     client.print( body );
-    client.print( F("\n\n") );
+    client.print( "\n\n" );
   }
   client.stop();
 } // end of uploadData()
 
 
-//
-// Arduino initialization entry point
-//
-void setup() 
+void startWiFi()
 {
-  #ifdef DEBUG_ESP8266
-  Serial.begin(115200);
-  delay(10);
-  Serial.println();
-  Serial.println();
-  #endif
-
-  // Beginning hardware checks
-
-  #ifdef I2C_BME280_ADDR
-  if (!bme.begin(I2C_BME280_ADDR)) {
-    #ifdef DEBUG_ESP8266
-    Serial.println(F("Error: Couldn't find a BME280 sensor."));
-    #endif
-    ESP.deepSleep(0);
-  }
-  #ifdef DEBUG_ESP8266
-  Serial.println(F("BME280 connected."));
-  #endif
-  #endif //I2C_BME280_ADDR
-
-  #ifdef BQ27441_FUEL_GAUGE
-  if (!lipo.begin()) // begin() will return true if communication is successful
-  {
-    #ifdef DEBUG_ESP8266
-    Serial.println(F("Error: Couldn't find BQ27441. (Battery must be plugged in)"));
-    #endif 
-    ESP.deepSleep(0);
-  }
-  #ifdef DEBUG_ESP8266
-  Serial.println(F("BQ27441 connected."));
-  #endif
-  if (lipo.flags() & BQ27441_FLAG_ITPOR) {
-    #ifdef DEBUG_ESP8266
-    Serial.print(F("BQ27441: POR detected. "));
-    #endif 
-    if ( bq27441_InitParameters(lipo,terminate_voltage) ) {
-      #ifdef DEBUG_ESP8266
-      Serial.println(F("Fuel Gauge initialized."));
-      #endif 
-    } else {
-      #ifdef DEBUG_ESP8266
-      Serial.println();
-      Serial.println(F("Warning: Failed to initialize Fuel Gauge parameters."));
-      #endif 
-    }
-  }
-  #endif //BQ27441_FUEL_GAUGE
-  
-  // Make the hostname up from our Chip ID (MAC addr)
-  char hostString[16]  = {0};
-  sprintf(hostString, "esp8266_%06x", ESP.getChipId());
-
-  // Connecting to a WiFi network
-  #ifdef DEBUG_ESP8266
-  Serial.print(F("Hostname: "));
-  Serial.println(hostString);
-  Serial.print(F("Connecting to "));
-  Serial.print(ssid);
-  Serial.print(F(" "));
+  #ifdef USE_SERIAL
+  USE_SERIAL.print(F("Hostname: "));
+  USE_SERIAL.println(WiFi.hostname());
+  USE_SERIAL.print(F("Connecting ."));
   #endif 
-  
-  WiFi.hostname(hostString);
-  WiFi.mode(WIFI_STA); 
-  // WiFi fix: https://github.com/esp8266/Arduino/issues/2186
+
+  // WiFi auto-connect is ON by default, when we are called, WiFi maybe connected already.
+  // https://github.com/esp8266/Arduino/issues/2186
   if (WiFi.status() != WL_CONNECTED)
     WiFi.begin(ssid, password);
   
   unsigned long wifiConnectStart = millis();
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    #ifdef DEBUG_ESP8266
-    Serial.print(".");
+    #ifdef USE_SERIAL
+    USE_SERIAL.print(".");
     #endif 
     if ( (millis()-wifiConnectStart) > wifi_connect_timeout ) {
-      #ifdef DEBUG_ESP8266
-      Serial.println();
-      Serial.println(F("Warning: Unable to connect to WiFi."));
+      #ifdef USE_SERIAL
+      USE_SERIAL.println();
+      USE_SERIAL.println(F("Warning: Unable to connect to WiFi."));
       #endif 
       ESP.deepSleep(sleep_timer);
     }
   }
 
-  #ifdef DEBUG_ESP8266
-  Serial.println();
-  Serial.println(F("WiFi connected."));
-  Serial.print(F("IP address: "));
-  Serial.println(WiFi.localIP());
+  #ifdef USE_SERIAL
+  USE_SERIAL.println();
+  USE_SERIAL.print(F("Connected to "));
+  USE_SERIAL.println(ssid);
+  USE_SERIAL.print(F("IP address: "));
+  USE_SERIAL.println(WiFi.localIP());
   #endif 
+}
+
+
+//
+// Arduino initialization entry point
+//
+void setup() 
+{ 
+  #ifdef USE_SERIAL
+  USE_SERIAL.begin(115200);
+  USE_SERIAL.println();
+  USE_SERIAL.println();
+  //USE_SERIAL.setDebugOutput(true);
+  #endif
+  
+  // First thing is to set hostname before WiFi is reconnected (auto-connect is ON)
+  // Make up new hostname from our Chip ID (The MAC addr)
+  char hostString[32]  = {0};
+  sprintf(hostString, "esp8266_%06x", ESP.getChipId());
+  WiFi.hostname(hostString);
+  WiFi.mode(WIFI_STA); 
+
+  // Start hardware checks
+  #ifdef I2C_BME280_ADDR
+  if (!bme.begin(I2C_BME280_ADDR)) {
+    #ifdef USE_SERIAL
+    USE_SERIAL.println(F("Error: Couldn't find a BME280 sensor."));
+    #endif
+    ESP.deepSleep(0);
+  }
+  #ifdef USE_SERIAL
+  USE_SERIAL.println(F("BME280 connected."));
+  #endif
+  #endif //I2C_BME280_ADDR
+
+  #ifdef BQ27441_FUEL_GAUGE
+  if (!lipo.begin()) // begin() will return true if communication is successful
+  {
+    #ifdef USE_SERIAL
+    USE_SERIAL.println(F("Error: Couldn't find BQ27441. (Battery must be plugged in)"));
+    #endif 
+    ESP.deepSleep(0);
+  }
+  #ifdef USE_SERIAL
+  USE_SERIAL.println(F("BQ27441 connected."));
+  #endif
+  if (lipo.flags() & BQ27441_FLAG_ITPOR) {
+    #ifdef USE_SERIAL
+    USE_SERIAL.print(F("BQ27441: POR detected. "));
+    #endif 
+    if ( bq27441_InitParameters(lipo,terminate_voltage) ) {
+      #ifdef USE_SERIAL
+      USE_SERIAL.println(F("Fuel Gauge initialized."));
+      #endif 
+    } else {
+      #ifdef USE_SERIAL
+      USE_SERIAL.println();
+      USE_SERIAL.println(F("Warning: Failed to initialize Fuel Gauge parameters."));
+      #endif 
+    }
+  }
+  #endif //BQ27441_FUEL_GAUGE
+
+  startWiFi();
 
   uploadData(api_endpoint);
 
@@ -339,32 +342,32 @@ void setup()
     
     case BATTERY_FLOAT:
       // If VBAT is floating and code is running, we must be external power
-      #ifdef DEBUG_ESP8266
-      Serial.println(F("External power, exit deep-sleep."));
+      #ifdef USE_SERIAL
+      USE_SERIAL.println(F("External power, exit deep-sleep."));
       #endif
       break;
 
     case BATTERY_CRITICAL:
-      #ifdef DEBUG_ESP8266
-      Serial.println(F("Warning: Under voltage detected. Shut-Down ESP8266."));
+      #ifdef USE_SERIAL
+      USE_SERIAL.println(F("Warning: Under voltage detected. Shut-Down ESP8266."));
       #endif
       ESP.deepSleep(0);  
 
     case BATTERY_LOW:
-      #ifdef DEBUG_ESP8266
-      Serial.println(F("Warning: Hibernate voltage detected. Long deep-Sleep timer."));
+      #ifdef USE_SERIAL
+      USE_SERIAL.println(F("Warning: Hibernate voltage detected. Long deep-Sleep timer."));
       #endif
       ESP.deepSleep(hibernate_timer);
 
     case BATTERY_NORMAL:
-      #ifdef DEBUG_ESP8266
-      Serial.println(F("Running on battery, short deep-sleep timer."));
+      #ifdef USE_SERIAL
+      USE_SERIAL.println(F("Running on battery, short deep-sleep timer."));
       #endif
       ESP.deepSleep(sleep_timer);  
    
     case BATTERY_FULL:
-      #ifdef DEBUG_ESP8266
-      Serial.println(F("Battery fully charged or external power, exit deep-sleep."));
+      #ifdef USE_SERIAL
+      USE_SERIAL.println(F("Battery fully charged or external power, exit deep-sleep."));
       #endif
       break;
   } // end of switch()
@@ -385,8 +388,8 @@ void loop()
     case BATTERY_CRITICAL:
     case BATTERY_LOW:
     case BATTERY_NORMAL:
-      #ifdef DEBUG_ESP8266
-      Serial.println(F("Running on battery, set deep-sleep mode."));
+      #ifdef USE_SERIAL
+      USE_SERIAL.println(F("Running on battery, set deep-sleep mode."));
       #endif
       ESP.deepSleep(sleep_timer);  
     case BATTERY_FLOAT:

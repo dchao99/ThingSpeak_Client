@@ -8,7 +8,8 @@
 #include <SparkFunBQ27441.h>
 #include "bq27441gi.h"
 
-#define DEBUG_BQ27441   // Debugging mode
+// Compiler directives, comment out to disable
+#define DEV_MODE        // Developer Mode
 
 #define BAT_1         // (eBay_803035)
 //#define BAT_2         // (PKCell_803860)
@@ -18,17 +19,17 @@
 //#define BAT_6         // (Samsung_25R-Grn)
 
 
-// BQ27441 Fuel Gauge Golden Image
+// BQ27441 Fuel Gauge Saved Golden Images
 // Note: On Sparkfun BS, R_iset is changed to 825Ω, the new I_term is (0.1 * 890/820) = 110mA.
 //       If bat < 1000mAh, Taper current = I-term + 90mA, otherwise Taper current = 0.1 C (±10%)
 
-// BAT_1 (eBay_803035): 850mAh@3.7V Taper=42 Qmax=16496
+// BAT_1 (eBay_803035): 850mAh@3.7V Taper=42 Qmax=16422
 #ifdef BAT_1
 const unsigned int design_capacity = 850;   // (mAh)
 const unsigned int design_energy = 850*3.7; // = Capacity * Nominal Voltage
 const unsigned int taper_rate = 42;         // = Capacity / (0.1 * Taper current)
-const unsigned int saved_qmax = 16496;      // Set to -1 if battery data not available
-uint16 saved_ra_table[] = {67,67,71,82,68,70,84,104,110,116,143,170,301,762,1212};
+const unsigned int saved_qmax = 16422;      // Set to -1 if battery data not available
+uint16 saved_ra_table[] = {71,71,75,87,73,75,87,103,105,109,133,157,258,637,1014};
 #endif //BAT_1
 
 // BAT_2 (PKCell_803860): 2000mAh@3.7V Taper=95 Qmax=16572
@@ -95,14 +96,14 @@ bool bq27441_InitParameters(BQ27441 lipo, int terminateVoltage)
   if (saved_qmax == -1) {
     // No golden image. Do a learning cycle.
     success = success && lipo.setUpdateStatusReg(0x03);   // Fast updates of Qmax and R_a Table
-    #ifdef DEBUG_BQ27441
+    #ifdef DEV_MODE
     Serial.print(F("Learning Cycle. "));
     #endif 
   }
   else {
     success = success && lipo.setQmax(saved_qmax);
     success = success && lipo.setRaTable(saved_ra_table);
-    #ifdef DEBUG_BQ27441
+    #ifdef DEV_MODE
     success = success && lipo.setUpdateStatusReg(0x03);    // Dev Mode: Fast updates
     Serial.print(F("Fast Updates. "));
     #else
