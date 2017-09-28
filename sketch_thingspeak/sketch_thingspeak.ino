@@ -47,14 +47,18 @@ const float volt_div_const = 4.45*1.06/1.023; // multiplier = Vin_max*Vref/1.023
                                               // WeMos BatShield: (350KΩ+100KΩ) Vin = 4.49
                                               // LM3671 Shield:   (340KΩ+100KΩ) Vin = 4.45
 
+// BQ27441 settings
+// Note: there is a small 20mV (@100mA) to 50mV (@1A) dropout between V(bat) and V(A0)
+const int terminate_voltage = 3000;  // (mV) Host system lowest operating voltage 
+
 // Wi-Fi Settings
 const char* ssid     = "San Leandro";      // your wireless network name (SSID)
-const char* password = "xxxxxxxx";         // your Wi-Fi network password
+const char* password = "nintendo";         // your Wi-Fi network password
 const unsigned long wifi_connect_timeout = 10 * 1000;  // 10 seconds
 
 // ThingSpeak Settings
 const int channel_id     = 293299;                // Channel ID for ThingSpeak 
-const String write_api_key = "XXXXXXXXXXXXXXXX";  // write API key for ThingSpeak Channel
+const String write_api_key = "QPRPTUT1SYYLEEDS";  // write API key for ThingSpeak Channel
 const char* api_endpoint = "api.thingspeak.com";  // URL
 const int upload_interval    =  30 * 1000;        // External power: posting data every 30 sec
 const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Deep sleep timer = 60 sec
@@ -67,10 +71,6 @@ const int lockout_voltage   = 3100;  // (mV) Under voltage (UVLO) -> shut-down i
 const int floating_voltage  = 500;   // (mV) No battery, VBAT is floating
 enum Battery { BATTERY_FLOAT, BATTERY_CRITICAL, BATTERY_LOW, BATTERY_NORMAL, BATTERY_FULL };
 Battery wemosBattery;
-
-// BQ27441 settings
-// Note: there is a small 20mV (@100mA) to 50mV (@1A) dropout between V(bat) and V(A0)
-const int terminate_voltage = 3100;  // (mV) Host system lowest operating voltage 
 
 // BME280 settings
 const float thing_altitude = 30;     // My altitude (meters)
@@ -288,7 +288,8 @@ void setup()
   
   // First thing is to set hostname before WiFi is reconnected (auto-connect is ON)
   // Make up new hostname from our Chip ID (The MAC addr)
-  char hostString[32]  = {0};
+  // Note: Max length for hostString is 32, increase array if hostname is longer
+  char hostString[16]  = {0};
   sprintf(hostString, "esp8266_%06x", ESP.getChipId());
   WiFi.hostname(hostString);
   WiFi.mode(WIFI_STA); 
