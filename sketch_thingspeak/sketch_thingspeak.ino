@@ -38,7 +38,7 @@ Deep-Sleep:
 
 // Compiler directives, comment out to disable
 #define USE_SERIAL Serial               // Valid options: Serial and Serial1
-//#define DEBUG_MAX_POWER               // Debug mode for fastest updates and battery discharge
+#define DEBUG_FAST_UPDATE                 // Debug mode for fastest updates and battery discharge
 #define BQ27441_FUEL_GAUGE              // BQ27441 Impedance Track Fuel Gauge
 #define I2C_BME280_ADDR 0x76            // BME280 I2C address
 
@@ -60,13 +60,13 @@ const unsigned long wifi_connect_timeout = 10 * 1000;  // 10 seconds
 const int channel_id     = 293299;                // Channel ID for ThingSpeak 
 const String write_api_key = "QPRPTUT1SYYLEEDS";  // write API key for ThingSpeak Channel
 const char* api_endpoint = "api.thingspeak.com";  // URL
-const int upload_interval    =  30 * 1000;        // External power: posting data every 30 sec
-const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Deep sleep timer = 60 sec
-const uint32 hibernate_timer = 150 * 1000000;     // Hibernate: Deep sleep timer = 2.5 min
+const int upload_interval    =  30 * 1000;        // External power: Post data every 30 sec
+const uint32 sleep_timer     = 060 * 1000000;     // Normal battery: Post data every = 60 sec
+const uint32 hibernate_timer = 150 * 1000000;     // Hibernate: Post data every = 2.5 min
 
 // ESP8266 settings
 const int recharge_voltage  = 4130;  // (mV) Recharging threshold, above -> battery full/charging 
-const int hibernate_voltage = 3550;  // (mV) Hibernate voltage (SoC~10%) -> reduce upload frequency
+const int hibernate_voltage = 3500;  // (mV) Hibernate (SoC~10%) -> reduce upload frequency 
 const int lockout_voltage   = 3100;  // (mV) Under voltage (UVLO) -> shut-down immediately
 const int floating_voltage  = 500;   // (mV) No battery, VBAT is floating
 enum Battery { BATTERY_FLOAT, BATTERY_CRITICAL, BATTERY_LOW, BATTERY_NORMAL, BATTERY_FULL };
@@ -107,7 +107,7 @@ void uploadData(const char * server)
       wemosBattery = BATTERY_CRITICAL;
       thingStatus = F("Battery Critical ");
     }
-    #ifndef DEBUG_MAX_POWER  // Skip deep-sleep modes for fastest updates and battery discharge
+    #ifndef DEBUG_FAST_UPDATE  // Skip deep-sleep modes for fastest updates and battery discharge
     else if (adc_mV < hibernate_voltage) {
       wemosBattery = BATTERY_LOW;
       thingStatus = F("Battery Low ");
@@ -116,7 +116,7 @@ void uploadData(const char * server)
       wemosBattery = BATTERY_NORMAL;
       thingStatus = F("Battery Normal ");
     }
-    #endif //DEBUG_MAX_POWER
+    #endif //DEBUG_FAST_UPDATE
     else {
       wemosBattery = BATTERY_FULL;
       thingStatus = F("Battery Full ");

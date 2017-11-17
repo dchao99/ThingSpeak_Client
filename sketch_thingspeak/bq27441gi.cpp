@@ -77,13 +77,13 @@ const unsigned int saved_qmax = 16546;       // Set to -1 if battery data not av
 uint16 saved_ra_table[] = {251,251,233,252,178,157,176,189,172,165,218,267,550,1431,2278};
 #endif //BAT_6
 
-// BAT_7 (Samsung_25R-Grn): 2500mAh@3.6V Taper=108 Qmax=16539
+// BAT_7 (Samsung_25R-Grn): 2500mAh@3.6V Taper=108 Qmax=16474
 #ifdef BAT_7
 const unsigned int design_capacity = 2500;   // (mAh)
 const unsigned int design_energy = 2500*3.6; // = Capacity * Nominal Voltage
 const unsigned int taper_rate = 108;         // Taper current = 2500/10.8 = 230mA
-const unsigned int saved_qmax = 16539;       // Set to -1 if battery data not available
-uint16 saved_ra_table[] = {112,112,107,134,119,132,181,227,232,262,377,456,871,2239,3552};
+const unsigned int saved_qmax = 16474;       // Set to -1 if battery data not available
+uint16 saved_ra_table[] = {142,142,139,176,173,210,298,362,371,400,557,655,1232,3152,4990};
 #endif //BAT_7
 
 // Default Qmax = 16384
